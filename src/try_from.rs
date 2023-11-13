@@ -2,7 +2,7 @@
 // all these functions return the proc_macro2::TokenStream type which is later
 // converted to a TokenStream
 use quote::quote;
-use syn::{DataEnum, DeriveInput, Fields, Ident, Variant};
+use syn::{DataEnum, DeriveInput};
 
 pub struct EnumTryFrom;
 

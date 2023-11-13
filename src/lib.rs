@@ -1,11 +1,14 @@
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, Variant};
+use syn::{parse_macro_input, Data, DeriveInput};
 
 mod from_str;
 use from_str::EnumFromStr;
 
 mod try_from;
 use try_from::EnumTryFrom;
+
+mod display;
+use display::EnumDisplay;
 
 //--------------------------------------------------------------------------------
 // Implement the FromStr trait for C-like enums only
@@ -25,7 +28,7 @@ pub fn from_str(input: TokenStream) -> TokenStream {
     };
 
     // uncomment this to view generated code during compilation
-    println!("{}", code);
+    //println!("{}", code);
 
     // this convert proc_macro2::TokenStream into a TokenStream
     code.into()
@@ -40,6 +43,22 @@ pub fn try_from(input: TokenStream) -> TokenStream {
 
     let code: proc_macro2::TokenStream = match &ast.data {
         Data::Enum(de) => EnumTryFrom::impl_try_from(&ast, de),
+        _ => unimplemented!("{} is not an enum", ast.ident.to_string()),
+    };
+
+    //println!("{}", code);
+    code.into()
+}
+
+//--------------------------------------------------------------------------------
+// Implement the Display trait for C-like enums only
+//--------------------------------------------------------------------------------
+#[proc_macro_derive(EnumDisplay)]
+pub fn display(input: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(input as DeriveInput);
+
+    let code: proc_macro2::TokenStream = match &ast.data {
+        Data::Enum(de) => EnumDisplay::impl_display(&ast, de),
         _ => unimplemented!("{} is not an enum", ast.ident.to_string()),
     };
 

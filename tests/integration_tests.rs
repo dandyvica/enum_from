@@ -1,4 +1,4 @@
-use enum_from::{EnumFromStr, EnumTryFrom};
+use enum_from::{EnumFromStr, EnumTryFrom, EnumDisplay};
 use std::str::FromStr;
 
 #[test]
@@ -18,7 +18,7 @@ fn enum_color() {
 
 #[test]
 fn enum_opcode() {
-    #[derive(Debug, PartialEq, EnumFromStr, EnumTryFrom)]
+    #[derive(Debug, PartialEq, EnumFromStr, EnumTryFrom, EnumDisplay)]
     #[repr(u8)]
     pub enum OpCode {
         Query = 0,  //[RFC1035]
@@ -33,12 +33,14 @@ fn enum_opcode() {
 
     let code = OpCode::from_str("Unassigned").unwrap();
     assert_eq!(code, OpCode::Unassigned);
+    assert_eq!(&code.to_string(), "Unassigned");
 
     let code = OpCode::from_str("Foo");
     assert!(code.is_err());
 
     let code = OpCode::try_from(6).unwrap();
-    assert_eq!(code, OpCode::DOS);    
+    assert_eq!(code, OpCode::DOS); 
+    assert_eq!(&code.to_string(), "DOS");
 
     let code = OpCode::try_from(u64::MAX);
     assert!(code.is_err());
