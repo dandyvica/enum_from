@@ -1,12 +1,17 @@
 # enum_from procedural macros
-Straightforward procedural macros to create [unit-only enums](https://doc.rust-lang.org/reference/items/enumerations.html) from either a string or u64.
-Just add ```#[derive(EnumFromStr, EnumTryFrom)]``` to the enum.
+Straightforward procedural macros to auto-create implementations of ```Display``` and ```TryFrom<&str>``` and ```TryFrom<u8/u16/...>``` for [unit-only enums](https://doc.rust-lang.org/reference/items/enumerations.html) 
+
+```rust
+```
+Just add ```#[derive(EnumTryFrom, EnumDisplay)]``` to the enum. From ```TryFrom``` ints, the proc-macro is looking at the ```#[repr()]``` attribute which is mandatory.
+
+Supported repr sizes are ```u8/u16/u32/u64/i8/i16/i32/i64```. For the ```TryFrom``` method, if it fails, it returns the value wrapped as an ```Error```.
 
 Example:
 
 ```rust
 // DNS opcodes
-#[derive(Debug, PartialEq, EnumFromStr, EnumTryFrom)]
+#[derive(Debug, PartialEq, EnumTryFrom, EnumDisplay)]
 #[repr(u8)]
 pub enum OpCode {
     Query = 0, //[RFC1035]
@@ -19,19 +24,15 @@ pub enum OpCode {
                 // 7-15 Unassigned
 }
 
-let code = OpCode::from_str("Unassigned").unwrap();
+let code = OpCode::try_from("Unassigned").unwrap();
 assert_eq!(code, OpCode::Unassigned);
 
-let code = OpCode::from_str("Foo");
-assert!(code.is_err());
+let code = OpCode::try_from("Foo").unwrap_err();
+assert_eq!(code, "Foo");
 
 let code = OpCode::try_from(6).unwrap();
 assert_eq!(code, OpCode::DOS);    
-
-let code = OpCode::try_from(u64::MAX);
-assert!(code.is_err());
 ```
 
 This is only possible for unit-only enums. Otherwise, compilation panics. 
 
-> Note: Only ```TryFrom<u64>``` is defined.
