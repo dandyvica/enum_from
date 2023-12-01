@@ -1,8 +1,9 @@
-use enum_from::{EnumDisplay, EnumTryFrom};
+use std::str::FromStr;
+use enum_from::{EnumFromStr, EnumDisplay, EnumTryFrom};
 
 #[test]
 fn enum_color() {
-    #[derive(Debug, PartialEq, EnumTryFrom, EnumDisplay)]
+    #[derive(Debug, PartialEq, EnumFromStr, EnumTryFrom, EnumDisplay)]
     #[repr(u8)]
     enum Color {
         White,
@@ -11,6 +12,11 @@ fn enum_color() {
 
     let c = Color::try_from("White").unwrap();
     assert_eq!(c, Color::White);
+
+    let c = Color::from_str("White").unwrap();
+    assert_eq!(c, Color::White);
+
+
     assert_eq!(&c.to_string(), "White");
     let c = Color::try_from("Foo").unwrap_err();
     assert_eq!(c, "Foo");
