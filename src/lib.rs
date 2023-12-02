@@ -47,7 +47,7 @@ pub fn try_from(input: TokenStream) -> TokenStream {
         _ => unimplemented!("{} is not an enum", ast.ident.to_string()),
     };
 
-    println!("{}", code);
+    //println!("{}", code);
     code.into()
 }
 

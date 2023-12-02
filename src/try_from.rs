@@ -11,7 +11,7 @@ impl EnumTryFrom {
         let enum_name = &ast.ident;
 
         // get the type inside #[repr()]
-        let ty = process_attr(&enum_name, &ast.attrs);
+        let ty = process_attr(enum_name, &ast.attrs);
 
         let arms_ints = de.variants.iter().map(|v| {
             let variant_ident = &v.ident;
