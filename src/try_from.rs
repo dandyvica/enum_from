@@ -1,8 +1,8 @@
 // gather here all helper functions for create the EnumTryFrom proc macro
 // all these functions return the proc_macro2::TokenStream type which is later
 // converted to a TokenStream
-use quote::{quote, ToTokens};
-use syn::{Attribute, DataEnum, DeriveInput, Ident};
+use quote::quote;
+use syn::{DataEnum, DeriveInput};
 
 use syn_utils::*;
 
@@ -42,7 +42,8 @@ impl EnumTryFrom {
             .any(|a| a.has_attribute("fallback").is_some());
 
         // get the type inside #[repr()]
-        let ty = SynUtils::repr_size(&ast.attrs).unwrap_or_else(|| unimplemented!("repr size is mandatory on enum {}", enum_name));
+        let ty = SynUtils::repr_size(&ast.attrs)
+            .unwrap_or_else(|| unimplemented!("repr size is mandatory on enum {}", enum_name));
 
         // loop through fields to build code
         let arms = de.variants.iter().map(|v| {
