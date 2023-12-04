@@ -28,17 +28,16 @@ pub fn from_str(input: TokenStream) -> TokenStream {
     };
 
     // uncomment this to view generated code during compilation
-    //println!("{}", code);
+    println!("{}", code);
 
     // this convert proc_macro2::TokenStream into a TokenStream
     code.into()
 }
 
-
 //--------------------------------------------------------------------------------
 // Implement the TryFrom trait for C-like enums only
 //--------------------------------------------------------------------------------
-#[proc_macro_derive(EnumTryFrom)]
+#[proc_macro_derive(EnumTryFrom, attributes(fallback))]
 pub fn try_from(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
@@ -47,7 +46,7 @@ pub fn try_from(input: TokenStream) -> TokenStream {
         _ => unimplemented!("{} is not an enum", ast.ident.to_string()),
     };
 
-    //println!("{}", code);
+    println!("{}", code);
     code.into()
 }
 
@@ -63,6 +62,6 @@ pub fn display(input: TokenStream) -> TokenStream {
         _ => unimplemented!("{} is not an enum", ast.ident.to_string()),
     };
 
-    //println!("{}", code);
+    println!("{}", code);
     code.into()
 }

@@ -1,6 +1,7 @@
 // gather here all helper functions for create the EnumDisplay proc macro
 // all these functions return the proc_macro2::TokenStream type which is later
 // converted to a TokenStream
+use proc_macro2::Span;
 use quote::quote;
 use syn::{DataEnum, DeriveInput, Fields, Ident, Variant};
 
@@ -23,6 +24,7 @@ impl EnumDisplay {
                     match self {
                         #( #arms)*
                     }
+                    Ok(())
                 }
             }
         }
@@ -32,13 +34,46 @@ impl EnumDisplay {
         let variant_ident = &variant.ident;
         let variant_ident_as_string = &variant.ident.to_string();
 
-        // this only works for C-like enums
-        if matches!(&variant.fields, Fields::Unit) {
-            quote! {
-                #enum_name::#variant_ident => write!(f, #variant_ident_as_string),
+        match &variant.fields {
+            // unnamed variant like: ChangeColor(i32, i32, i32)
+            Fields::Unnamed(_) => {
+                let fields = (0..variant.fields.len())
+                    .map(|i| Ident::new(&format!("f{}", i), Span::call_site()));
+
+                let method_calls = fields.clone().map(|f| {
+                    quote! {
+                        write!(f, "{}", #f)?;
+                    }
+                });
+
+                quote! {
+                    #enum_name::#variant_ident(#(#fields),*) => {
+                        #( #method_calls)*
+                    },
+                }
             }
-        } else {
-            unimplemented!("only C-like enums are implemented")
+
+            // named variant like: Move { x: i32, y: i32 }
+            Fields::Named(_) => {
+                let members = variant.fields.iter().map(|f| &f.ident);
+
+                let method_calls = members.clone().map(|f| {
+                    quote! {
+                        write!(f, "{}", #f)?;
+                    }
+                });
+
+                quote! {
+                    #enum_name::#variant_ident{#(#members),*} => {
+                        #( #method_calls)*
+                    },
+                }
+            }
+
+            // unit variant like: Quit = 1
+            Fields::Unit => quote! {
+                #enum_name::#variant_ident => write!(f, #variant_ident_as_string)?,
+            },
         }
     }
 }

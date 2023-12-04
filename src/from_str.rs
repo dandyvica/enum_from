@@ -41,7 +41,7 @@ impl EnumFromStr {
                 #variant_ident_as_string => Ok(#enum_name::#variant_ident),
             }
         } else {
-            unimplemented!("only C-like enums are implemented")
+            quote!()
         }
     }
 }
