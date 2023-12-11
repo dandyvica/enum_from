@@ -5,6 +5,8 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::{DataEnum, DeriveInput, Fields, Ident, Variant};
 
+use syn_utils::*;
+
 pub struct EnumDisplay;
 
 impl EnumDisplay {
@@ -37,12 +39,21 @@ impl EnumDisplay {
         match &variant.fields {
             // unnamed variant like: ChangeColor(i32, i32, i32)
             Fields::Unnamed(_) => {
+                // check for the fallback attribute. If so, use the variant name to print out value
+                let has_attr = variant.has_attribute("fallback");
+
                 let fields = (0..variant.fields.len())
                     .map(|i| Ident::new(&format!("f{}", i), Span::call_site()));
 
                 let method_calls = fields.clone().map(|f| {
-                    quote! {
-                        write!(f, "{}", #f)?;
+                    if has_attr.is_none() {
+                        quote! {
+                            write!(f, "{}", #f)?;
+                        }
+                    } else {
+                        quote! {
+                            write!(f, "{}{}", #variant_ident_as_string, #f)?;
+                        }
                     }
                 });
 

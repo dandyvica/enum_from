@@ -58,7 +58,7 @@ fn enum_opcode_reserved() {
 
     let code = OpCodeReserved::try_from(1000).unwrap();
     assert_eq!(code, OpCodeReserved::Reserved(1000));
-    assert_eq!(&code.to_string(), "1000");
+    assert_eq!(&code.to_string(), "Reserved1000");
 }
 
 #[test]
