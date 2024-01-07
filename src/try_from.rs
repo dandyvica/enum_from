@@ -36,6 +36,7 @@ impl EnumTryFrom {
             _ => unimplemented!("enum {} contains more than one unnamed field", enum_name),
         }
 
+        // check if the enum owns a fallback attribute
         let found_fallback = de
             .variants
             .iter()

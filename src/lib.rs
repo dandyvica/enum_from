@@ -28,7 +28,7 @@ pub fn from_str(input: TokenStream) -> TokenStream {
     };
 
     // uncomment this to view generated code during compilation
-    //println!("{}", code);
+    // println!("{}", code);
 
     // this convert proc_macro2::TokenStream into a TokenStream
     code.into()
