@@ -1,3 +1,5 @@
+[![Actions](https://github.com/dandyvica/siphash_c_d/actions/workflows/rust.yml/badge.svg)](https://github.com/dandyvica/siphash_c_d/actions/workflows/rust.yml)
+
 # _enum_from_ procedural macros
 Straightforward procedural macros to auto-create implementations of ```Display``` , ```FromStr``` and ```TryFrom<u8/u16/...>``` for enums.
 
